@@ -12,8 +12,6 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    allow:
-      - dependency-type: "all"
     groups:
       golang-dependencies:
         applies-to: security-updates
