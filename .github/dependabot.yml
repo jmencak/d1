@@ -3,7 +3,7 @@
 # vulnerable dependencies promptly.
 #
 # `open-pull-requests-limit: 0` disables version-update PRs.  Security updates
-# have a separate fixed limit of 10 and and are still created when GitHub's
+# have a separate fixed limit of 10 and are still created when GitHub's
 # advisory database flags a dependency in go.mod/go.sum.
 
 version: 2
@@ -11,26 +11,25 @@ updates:
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    # PR-aggregation filter.  Group updates to reduce PR noise.  First matching group wins.
     groups:
-      golang-dependencies:
-        applies-to: security-updates
-        patterns:
-          - "golang.org/*"
-      k8s-dependencies:
-        applies-to: security-updates
+      # Kubernetes/OpenShift updates.
+      # Note: currently, k8s dependencies are pinned by a replace directive.  They're being
+      #       updated manually all in a lockstep.
+      k8s-ecosystem:
         patterns:
           - "k8s.io/*"
           - "sigs.k8s.io/*"
-      openshift-dependencies:
+          - "github.com/openshift/*"
+          - "github.com/openshift-kni/*"
+      remaining-dependencies:
         applies-to: security-updates
         patterns:
-          - "github.com/openshift/*"
-          - "github.com/openshift-eng/*"
-          - "github.com/openshift-kni/*"
+          - "*"
     # 0 means that only security updates are allowed.
-    # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#open-pull-requests-limit
-    # https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/configuring-dependabot-security-updates#overriding-the-default-behavior-with-a-configuration-file
+    # https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#open-pull-requests-limit
+    # https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-security-updates#overriding-the-default-behavior-with-a-configuration-file
     open-pull-requests-limit: 0
     # Reviewers are auto-assigned by Prow.  Set 'jmencak' as assignee for tracking.
     assignees:
